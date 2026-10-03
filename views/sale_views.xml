@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_chassis" model="ir.ui.view">
+        <field name="name">sale.order.chassis.description</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_print_chassis_tickets" type="object"
+                        string="Print Chassis Tickets" icon="fa-print"
+                        invisible="chassis_sale_type != 'retail' or state == 'cancel'"
+                        groups="sales_team.group_sale_salesman"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="chassis_sale_type" readonly="state not in ['draft', 'sent']"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

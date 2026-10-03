@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+wizard_sales,chassis.confirmation.sales,model_sale_chassis_confirmation,sales_team.group_sale_salesman,1,1,1,1
+wizard_account,chassis.confirmation.account,model_sale_chassis_confirmation,account.group_account_invoice,1,1,1,1

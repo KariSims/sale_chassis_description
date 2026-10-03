@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="settings_retail_chassis" model="ir.ui.view">
+        <field name="name">res.config.settings.retail.chassis</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='sale_management']" position="inside">
+                <block title="Retail Sale Chassis" name="retail_chassis_settings" groups="base.group_system">
+                    <setting string="Require chassis for retail sales" company_dependent="1"
+                             help="Select the products whose retail sales and invoice descriptions must contain a chassis. Wholesale sales do not require it.">
+                        <field name="retail_chassis_enabled"/>
+                        <div class="content-group" invisible="not retail_chassis_enabled">
+                            <label for="retail_chassis_product_tmpl_ids"/>
+                            <field name="retail_chassis_product_tmpl_ids" widget="many2many_tags"
+                                   domain="[('sale_ok', '=', True), ('type', '!=', 'service'), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"
+                                   options="{'no_create': True, 'no_create_edit': True}"/>
+                            <div class="text-muted">Applies to all variants of the selected products in this company.</div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_chassis_ticket" model="report.paperformat">
+        <field name="name">Chassis Ticket - 80 x 60 mm</field>
+        <field name="format">custom</field>
+        <field name="page_width">80</field>
+        <field name="page_height">60</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">3</field>
+        <field name="margin_left">3</field>
+        <field name="margin_right">3</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+    <record id="action_chassis_ticket" model="ir.actions.report">
+        <field name="name">Chassis Tickets</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sale_chassis_description.chassis_ticket</field>
+        <field name="report_file">sale_chassis_description.chassis_ticket</field>
+        <field name="paperformat_id" ref="paperformat_chassis_ticket"/>
+        <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        <field name="print_report_name">'Chassis Tickets - %s' % object.name</field>
+    </record>
+    <template id="ticket_html_container" inherit_id="web.report_layout" primary="True">
+        <xpath expr="//t[@t-call-assets]" position="replace">
+            <style>html, body { margin: 0; padding: 0; } main { width: 100%; }</style>
+        </xpath>
+    </template>
+    <template id="ticket_minimal_layout" inherit_id="web.minimal_layout" primary="True">
+        <xpath expr="//t[@t-call-assets='web.report_assets_pdf'][@t-js='false']" position="replace"/>
+        <xpath expr="//t[@t-call-assets='web.report_assets_common']" position="replace"/>
+        <xpath expr="//t[@t-call-assets='web.report_assets_pdf'][@t-css='false']" position="replace"/>
+        <xpath expr="//head" position="inside">
+            <style>html, body { margin: 0; padding: 0; }</style>
+        </xpath>
+    </template>
+    <template id="ticket_styles">
+            <style>
+                .chassis-ticket { font-family: 'DejaVu Sans', Arial, sans-serif; color: #000;
+                    font-size: 11px; line-height: 1.3; text-align: center; width: 100%; }
+                .chassis-ticket + .chassis-ticket { page-break-before: always; }
+                .chassis-ticket .company { font-size: 13px; font-weight: bold; margin-bottom: 6px; }
+                .chassis-ticket .title { font-size: 12px; margin: 6px 0; }
+                .chassis-ticket .product { font-size: 12px; font-weight: bold; margin: 6px 0; }
+                .chassis-ticket .number { font-family: 'DejaVu Sans Mono', monospace;
+                    font-size: 22px; font-weight: bold; line-height: 1.35; margin: 10px 0;
+                    word-wrap: break-word; overflow-wrap: break-word; word-break: break-all; }
+                .chassis-ticket .text { word-wrap: break-word; }
+                .chassis-ticket .rule { border-top: 1px dashed #000; margin: 7px 0; }
+            </style>
+    </template>
+    <template id="chassis_ticket">
+        <t t-call="sale_chassis_description.ticket_html_container">
+            <div t-foreach="docs" t-as="o" class="article"
+                 t-att-data-oe-model="o._name" t-att-data-oe-id="o.id">
+                <t t-call="sale_chassis_description.ticket_styles"/>
+                <div t-foreach="[row for row in tickets if row['order'] == o]" t-as="ticket" class="chassis-ticket">
+                <div class="company text" t-field="ticket['order'].company_id.name"/>
+                <div class="rule"/>
+                <div class="title">CHASSIS NUMBER</div>
+                <div class="product text" t-field="ticket['line'].product_id.display_name"/>
+                <div class="number" t-out="ticket['chassis']"/>
+                <div class="rule"/>
+                <div class="text">Order: <span t-field="ticket['order'].name"/></div>
+                <div>Date: <span t-field="ticket['order'].date_order" t-options="{'widget': 'date'}"/></div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
